@@ -17,7 +17,7 @@
 12. Run the exp notebooks
 13. git add - commit - push
 
-14. dvc init
+14. pip install dvc and  dvc init
 15. open a new cmd terminal and do - echo %TEMP% (copy the tem folder location)
-C:
+C:\Users\ASUS\AppData\Local\Temp
 16. dvc remote add -d myremote s3_local
