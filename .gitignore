@@ -221,3 +221,9 @@ models/
 src/connections/config.json
 
 notebooks/
+notebooks/
+data/raw
+data/interim
+data/processed
+reports/metrics.json
+reports/experiment_info.json
