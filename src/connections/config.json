@@ -1,0 +1,9 @@
+{
+    "sql_server": {
+        "server": "localhost",
+        "database": "IMDB_Rating",
+        "table": "dbo.first",
+        "username": "",
+        "pass": ""
+    }
+}
