@@ -2,6 +2,8 @@ import pyodbc
 import pandas as pd
 import json
 import os
+import urllib
+from sqlalchemy import create_engine
 
 def main(config_path = "config.json"):
     """
@@ -32,28 +34,32 @@ def main(config_path = "config.json"):
 
     # Define connections string for Windows Authetication
     connection_string = (
-        f"DRIVER = {{SQL Server}};"
-        f"SERVER = {server};"
-        f"DATABASE = {database};"
-        f"Trusted_Connection = yes;"
+        f"DRIVER={{SQL Server}};"
+        f"SERVER={server};"
+        f"DATABASE={database};"
+        f"Trusted_Connection=yes;"
     )
     print(f"{connection_string}")
 
     try:
-        # Establish Connection
-        connection = pyodbc.connect(connection_string)
-        if connection:
-            print("Connection to SQL Server Successful!")
-        else:
-            print("Could not connect to SSMS")
+        # Build a SQLAlchemy engine from the connection string
+        # (pandas prefers this over a raw pyodbc connection)
+        params = urllib.parse.quote_plus(connection_string)
+        engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
+        print("Connection to SQL Server Successful!")
 
         # Fetch data from the specified table
-        query = f"SELECT = FROM {table}"
-        df = pd.read_sql(query, connection)
-        connection.close()
+        query = f"SELECT * FROM {table}"
+        df = pd.read_sql(query, engine)
         print(f"Data fetched Successfully form Table '{table}'..")
         return df
     except Exception as e:
         print(f"Error Connecting to SQL Server or Fetching data: {e}")
         return None
-    
+
+
+if __name__ == '__main__':
+    df = main()
+    if df is not None:
+        print(f"\nFetched {len(df)} rows")
+        print(df.head())

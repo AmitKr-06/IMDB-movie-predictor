@@ -38,3 +38,5 @@ ipykernel
 dvc
 mlflow
 dagshub
+pyodbc
+sqlalchemy
