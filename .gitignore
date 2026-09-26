@@ -221,8 +221,8 @@ local_s3/
 models/
 src/connections/config.json
 
-notebooks/
-notebooks/
+notebooks/*
+!notebooks/IMDB.csv
 data/raw
 data/interim
 data/processed
