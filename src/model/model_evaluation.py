@@ -116,8 +116,9 @@ def main():
             X_test = test_data.iloc[:, :-1].values
             y_test = test_data.iloc[:, -1].values
 
+            # Evaluate model
             metrics = evaluate_model(clf, X_test, y_test)
-
+            # Save metrics locally
             save_metrics(metrics, 'reports/metrics.json')
 
             # Log metrics to MLflow
@@ -130,11 +131,21 @@ def main():
                 for param_name, param_value in params.items():
                     mlflow.log_param(param_name, param_value)
 
-            # Log model to MLflow
-            mlflow.sklearn.log_model(clf, "model")
+            # Log model to MLflow and register the model
+            model_info = mlflow.sklearn.log_model(clf, name = "model", registered_model_name = "my_model")
 
-            # Save model info
-            save_model_info(run.info.run_id, "model", 'reports/experiment_info.json')
+            logging.info("Model logged to MLflow Successfully!")
+            logging.info(f"Model ID: {model_info.model_id}")
+            logging.info(f"Registered Model Version: " f"{model_info.registered_model_version}")
+
+            if model_info.registered_model_version:
+                client = mlflow.MlflowClient()
+                client.set_registered_model_alias(
+                    name = "my_model",
+                    alias = "staging",
+                    version = str(model_info.registered_model_version)
+                )
+                logging.info(f"Model version {model_info.registered_model_version}" f"set as Stagiing.")
 
             # Log the metrics file to MLflow
             mlflow.log_artifact('reports/metrics.json')

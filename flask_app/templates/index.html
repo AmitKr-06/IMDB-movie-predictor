@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>IMDb Sentiment AI</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- Your CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<div class="lobby">
+
+
+    <!-- =====================================================
+         TOP BAR
+         ===================================================== -->
+
+    <nav class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                <i class="fas fa-film"></i>
+            </div>
+
+            <div class="brand-name">
+                IMDb <span class="brand-ai">Sentiment AI</span>
+            </div>
+
+        </div>
+
+
+        <div class="live-status">
+
+            <span class="live-dot"></span>
+
+            AI MODEL ONLINE
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <header class="hero">
+
+        <div class="hero-badge">
+
+            <i class="fas fa-wand-magic-sparkles"></i>
+
+            AI-Powered Movie Review Analysis
+
+        </div>
+
+
+        <h1>
+            What does the
+            <span>audience</span>
+            really think?
+        </h1>
+
+
+        <p class="hero-description">
+
+            Paste any movie review and let our machine learning
+            model analyze the sentiment in seconds.
+
+        </p>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         AI INPUT PANEL
+         ===================================================== -->
+
+    <section class="ai-panel">
+
+        <div class="ai-panel-inner">
+
+
+            <!-- PANEL HEADER -->
+
+            <div class="panel-header">
+
+                <div class="panel-title">
+
+                    <div class="panel-title-icon">
+
+                        <i class="fas fa-message"></i>
+
+                    </div>
+
+                    Analyze a Review
+
+                </div>
+
+
+                <div class="panel-label">
+
+                    IMDB SENTIMENT CLASSIFIER
+
+                </div>
+
+            </div>
+
+
+
+            <!-- FORM -->
+
+            <form
+                action="/predict"
+                method="POST"
+                id="reviewForm"
+            >
+
+
+                <!-- INPUT -->
+
+                <div class="input-wrapper">
+
+                    <textarea
+                        class="review-input"
+                        id="text"
+                        name="text"
+                        placeholder="Write or paste a movie review here..."
+                        required
+                        maxlength="5000"
+                    >{{ request.form.text if request.form.text else '' }}</textarea>
+
+
+                    <div class="input-footer">
+
+                        <span class="input-hint">
+
+                            <i class="fas fa-keyboard"></i>
+
+                            Enter your review
+
+                        </span>
+
+
+                        <span
+                            class="char-count"
+                            id="charCount"
+                        >
+                            0 / 5000
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- EXAMPLES -->
+
+                <div class="examples">
+
+                    <span class="examples-label">
+                        Try:
+                    </span>
+
+
+                    <button
+                        type="button"
+                        class="example-btn"
+                        onclick="setReview('Absolutely brilliant movie. The acting, story and cinematography were outstanding.')"
+                    >
+                        Positive review
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="example-btn"
+                        onclick="setReview('The movie was slow, boring and predictable. I could barely finish it.')"
+                    >
+                        Negative review
+                    </button>
+
+                </div>
+
+
+
+                <!-- BUTTON -->
+
+                <button
+                    type="submit"
+                    class="predict-btn"
+                >
+
+                    <span class="predict-btn-content">
+
+                        <i class="fas fa-sparkles"></i>
+
+                        Analyze Sentiment
+
+                        <i class="fas fa-arrow-right"></i>
+
+                    </span>
+
+                </button>
+
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RESULT
+         ===================================================== -->
+
+    {% if result is not none %}
+
+    <section
+        class="result-card result-{{ 'positive' if result == 1 else 'negative' }}"
+    >
+
+
+        <div class="result-top">
+
+
+            <div class="result-icon">
+
+                {% if result == 1 %}
+
+                    <i class="fas fa-thumbs-up"></i>
+
+                {% else %}
+
+                    <i class="fas fa-thumbs-down"></i>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="result-meta">
+
+                <p class="result-eyebrow">
+                    AI Prediction
+                </p>
+
+
+                <h2 class="result-title">
+
+                    {% if result == 1 %}
+
+                        Positive Sentiment
+
+                    {% else %}
+
+                        Negative Sentiment
+
+                    {% endif %}
+
+                </h2>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- CONFIDENCE -->
+
+        <div class="confidence">
+
+            <div class="confidence-header">
+
+                <span class="confidence-label">
+                    Model confidence
+                </span>
+
+                <span class="confidence-value">
+                    {{ confidence if confidence is defined else '—' }}
+                </span>
+
+            </div>
+
+
+            <div class="confidence-bar">
+
+                <div class="confidence-fill"></div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+    {% endif %}
+
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer class="footer">
+
+        <i class="fas fa-microchip"></i>
+
+        Powered by Machine Learning
+
+        <span>•</span>
+
+        Real-time sentiment analysis
+
+    </footer>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script>
+
+const textarea = document.getElementById("text");
+const charCount = document.getElementById("charCount");
+
+
+function updateCharacterCount() {
+
+    if (!textarea || !charCount) return;
+
+    charCount.textContent =
+        `${textarea.value.length} / 5000`;
+
+}
+
+
+if (textarea) {
+
+    textarea.addEventListener(
+        "input",
+        updateCharacterCount
+    );
+
+    updateCharacterCount();
+
+}
+
+
+function setReview(review) {
+
+    if (!textarea) return;
+
+    textarea.value = review;
+
+    updateCharacterCount();
+
+    textarea.focus();
+
+}
+
+</script>
+
+
+</body>
+
+</html>
