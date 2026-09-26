@@ -147,6 +147,9 @@ def main():
                 )
                 logging.info(f"Model version {model_info.registered_model_version}" f"set as Stagiing.")
 
+            # Save model info (run_id + model path) for downstream stages
+            save_model_info(run.info.run_id, "model", 'reports/experiment_info.json')
+            
             # Log the metrics file to MLflow
             mlflow.log_artifact('reports/metrics.json')
 
