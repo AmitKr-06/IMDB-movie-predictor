@@ -54,5 +54,6 @@ jobs:
               if: success()
               env:
                 CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
+                IMDB_Rating_TEST: ${{ secrets.IMDB_Rating_TEST }}
               run: python -m unittest tests/test_flask_app.py
               
